@@ -9,7 +9,7 @@ class AI
   @@help_words = ["help", "help!", "this sucks", "fuck you", "man", "you suck"]
   
   def initialize
-    @name = @@robot_names[rand(4)]
+    @name = @@robot_names[rand(@@robot_names.length)]
     @human_input = nil
     @answer = nil
   end
