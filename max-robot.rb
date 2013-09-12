@@ -4,8 +4,8 @@ require "pry"
 
 EXIT_WORDS = ["exit", "quit", "q", "asdf"]
 ROBOT_NAMES = ["Lucile", "RTD2", "Rupert", "Bush", "Gwen", "Bruno", "C3PO"]
-QUESTION_WORDS = ["why", "what", "?", "who", "how", "where"]
-HELP_WORDS = ["help", "help!", "this sucks", "fuck you", "man", "you suck"]
+QUESTION_WORDS = ["why", "what", "?", "who", "how", "where", "when"]
+HELP_WORDS = ["help", "help!", "this sucks", "man", "you suck"]
 
 class AI
   def initialize
@@ -35,39 +35,35 @@ class AI
 
   def parse_input
     if input_include_question?
-      puts
-      puts "you asked a question, good for you"
+      puts "\nyou asked a question, good for you"
       puts
       if get_fact_answer
-        #show_train
         get_fact_answer.each_with_index do |item, index|
           puts "Searching for #{item}....." if index.zero?
           puts item
           puts
         end
       else
-        #show_train
         puts "Choose a topic by number"
         get_answer.each_with_index do |option, index|
-          puts "#{index + 1}.- #{option}"
+        puts "#{index + 1}.- #{option}"
         end
       end
     elsif input_include_help_word?
       display_help
-    elsif include_option?
+    elsif input_include_option?
       navigate_to_option
     else
       try_again
     end
   end
 
-  def include_option?
+  def input_include_option?
     @human_input.to_i > 0 && @human_input.to_i < 11
   end
 
   def navigate_to_option
     parser_result = @answer.links[@human_input.to_i - 1].click
-    #binding.pry
     puts parser_result.parser.css('p').inner_text
   end
   def input_include_help_word?
@@ -90,12 +86,12 @@ class AI
 
   def get_answer
 
-    @answer = GoogleKnowledge.new(@human_input)
+    @answer = GoogleSearch.new(@human_input)
     @answer.show_results
   end
 
   def get_fact_answer
-    @answer = WolframKnowledge.new(@human_input)
+    @answer = WolframSearch.new(@human_input)
     @answer.show_results
 
   end
@@ -107,7 +103,7 @@ class AI
 end
 
 
-class WolframKnowledge
+class WolframSearch
   attr_reader :question, :xml_doc
   def initialize(question)
     @question = URI::encode(question)
@@ -132,7 +128,7 @@ end
 
 
 
-class GoogleKnowledge
+class GoogleSearch
   attr_reader :links
   def initialize(question)
     @question = question
@@ -148,9 +144,10 @@ class GoogleKnowledge
     @agent.page.parser.css('.r > a').map { |link| link.inner_text }
   end
 
+  
+
 end
 
-# know = Knowledge.new("what is the meaning of life?")
 
 rtd2 = AI.new
 rtd2.greet
